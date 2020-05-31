@@ -34,13 +34,19 @@ func main() {
 
 	container := fyne.NewContainerWithLayout(layout.NewGridLayout(1),
 		// Row 1
-		fyne.NewContainerWithLayout(layout.NewGridLayout(2),
+		fyne.NewContainerWithLayout(layout.NewGridLayout(4),
 			newButton(config.Buttons[0]),
 			newButton(config.Buttons[1]),
 			newButton(config.Buttons[2]),
 			newButton(config.Buttons[3]),
 			newButton(config.Buttons[4]),
 			newButton(config.Buttons[5]),
+			newButton(config.Buttons[6]),
+			newButton(config.Buttons[7]),
+			newButton(config.Buttons[8]),
+			newButton(config.Buttons[9]),
+			newButton(config.Buttons[10]),
+			newButton(config.Buttons[11]),
 		),
 	)
 
