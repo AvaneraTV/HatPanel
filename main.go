@@ -2,8 +2,7 @@ package main
 
 import (
 	"HatPanel/config"
-	"fmt"
-	"time"
+	"HatPanel/keybd_event"
 
 	"image/color"
 
@@ -11,12 +10,12 @@ import (
 	"fyne.io/fyne/app"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
-	"github.com/micmonay/keybd_event"
 )
 
 var (
-	KB keybd_event.KeyBonding
-
+	// BS is used to avoid a deadlock wherin I need to allow myself to trigger actions on a button
+	// when any button (including the same button) is pressed. Because it's self-referential, I need a secondary
+	// reference to the button. It also allows me to reference the previous button pressed.
 	BS buttonState = buttonState{
 		LastPressed:    -1,
 		ButtonRegister: map[int]*widget.Button{},
@@ -56,23 +55,9 @@ func genButtons(c config.ProjectConfig) []fyne.CanvasObject {
 }
 
 func newButton(button config.HotkeyPanelButton, buttonConfigIndex int) *widget.Button {
+	keyboardEvent := keybd_event.GenerateKeypressFunction(button)
 	f := func() {
-		KB.SetKeys(keybdEventFromKeyString(button.Key))
-		KB.HasALT(button.HasAlt)
-		KB.HasCTRL(button.HasCtrl)
-		KB.HasSHIFT(button.HasShift)
-
-		err := KB.Press()
-		if err != nil {
-			fmt.Println(err)
-		}
-		time.Sleep(10 * time.Millisecond)
-		err = KB.Release()
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			fmt.Println(button.Key)
-		}
+		keyboardEvent()
 
 		BS.LastPressed = buttonConfigIndex
 		for k, v := range BS.ButtonRegister {
@@ -177,115 +162,4 @@ func (t *appTheme) ScrollBarSize() int {
 }
 func (t *appTheme) ScrollBarSmallSize() int {
 	return t.defaultTheme.ScrollBarSmallSize()
-}
-
-func keybdEventFromKeyString(key string) int {
-	switch key {
-	case "~":
-		return keybd_event.VK_SP1
-	case "1":
-		return keybd_event.VK_1
-	case "2":
-		return keybd_event.VK_2
-	case "3":
-		return keybd_event.VK_3
-	case "4":
-		return keybd_event.VK_4
-	case "5":
-		return keybd_event.VK_5
-	case "6":
-		return keybd_event.VK_6
-	case "7":
-		return keybd_event.VK_7
-	case "8":
-		return keybd_event.VK_8
-	case "9":
-		return keybd_event.VK_9
-	case "0":
-		return keybd_event.VK_0
-	case "-":
-		return keybd_event.VK_SP2
-	case "=":
-		return keybd_event.VK_SP3
-	case "BACKSPACE":
-		return keybd_event.VK_BACKSPACE
-	case "TAB":
-		return keybd_event.VK_TAB
-	case "Q":
-		return keybd_event.VK_Q
-	case "W":
-		return keybd_event.VK_W
-	case "E":
-		return keybd_event.VK_E
-	case "R":
-		return keybd_event.VK_R
-	case "T":
-		return keybd_event.VK_T
-	case "Y":
-		return keybd_event.VK_Y
-	case "U":
-		return keybd_event.VK_U
-	case "I":
-		return keybd_event.VK_I
-	case "O":
-		return keybd_event.VK_O
-	case "P":
-		return keybd_event.VK_P
-	case "[":
-		return keybd_event.VK_SP4
-	case "]":
-		return keybd_event.VK_SP5
-	case "ENTER":
-		return keybd_event.VK_ENTER
-	case "CAPSLOCK":
-		return keybd_event.VK_CAPSLOCK
-	case "A":
-		return keybd_event.VK_A
-	case "S":
-		return keybd_event.VK_S
-	case "D":
-		return keybd_event.VK_D
-	case "F":
-		return keybd_event.VK_F
-	case "G":
-		return keybd_event.VK_G
-	case "H":
-		return keybd_event.VK_H
-	case "J":
-		return keybd_event.VK_J
-	case "K":
-		return keybd_event.VK_K
-	case "L":
-		return keybd_event.VK_L
-	case ";":
-		return keybd_event.VK_SP6
-	case "'":
-		return keybd_event.VK_SP7
-	case "\\":
-		return keybd_event.VK_SP8
-	case "Z":
-		return keybd_event.VK_Z
-	case "X":
-		return keybd_event.VK_X
-	case "C":
-		return keybd_event.VK_C
-	case "V":
-		return keybd_event.VK_V
-	case "B":
-		return keybd_event.VK_B
-	case "N":
-		return keybd_event.VK_N
-	case "M":
-		return keybd_event.VK_M
-	case ",":
-		return keybd_event.VK_SP9
-	case ".":
-		return keybd_event.VK_SP10
-	case "/":
-		return keybd_event.VK_SP11
-	case "SPACE":
-		return keybd_event.VK_SPACE
-	default:
-		panic("Invalid key provided")
-	}
 }
