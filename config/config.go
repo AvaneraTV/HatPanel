@@ -10,80 +10,78 @@ import (
 	"github.com/spf13/viper"
 )
 
-var (
-	keys = [][]string{
-		{"key1_label", "key1_keys"},
-		{"key2_label", "key2_keys"},
-		{"key3_label", "key3_keys"},
-		{"key4_label", "key4_keys"},
-		{"key5_label", "key5_keys"},
-		{"key6_label", "key6_keys"},
-		{"key7_label", "key7_keys"},
-		{"key8_label", "key8_keys"},
-		{"key9_label", "key9_keys"},
-		{"key10_label", "key10_keys"},
-		{"key11_label", "key1_1keys"}, // This line has a typo. Will fix after backwards-compatibility is added to config.
-		{"key12_label", "key1_k2eys"}, // This line has a typo. Will fix after backwards-compatibility is added to config.
-	}
+// ProjectConfig is a top-level wrapper for config
+type ProjectConfig struct {
+	ConfigVersion string
+	HotkeyPanel   HotkeyPanelConfig
+}
 
+// HotkeyPanelConfig is the definition of our configuration options for the hotkey/button panel.
+type HotkeyPanelConfig struct {
+	NumCols int
+	NumRows int
+	Buttons []HotkeyPanelButton
+}
+
+// HotkeyPanelButton defines the options for a single button on the hotkey panel.
+type HotkeyPanelButton struct {
+	Key   string
+	Label string
+
+	// Key-combination modifiers
+	HasAlt   bool
+	HasCtrl  bool
+	HasShift bool
+
+	// Behavioral switches
+	IsDisabled bool
+}
+
+const (
+	configFileName       = "hatPanel_config.json"
+	currentConfigVersion = "0.1.0"
+)
+
+var (
 	// Buttons are the parsed key/values from config.
 	Buttons = []Button{}
 )
 
-func ReadConfig() {
-	configFileName := "hatPanel_config.yml"
+// ReadConfig will read in the configuration from file. It will save the config if needed.
+func ReadConfig() ProjectConfig {
 
-	viper.SetDefault(keys[0][0], "1")
-	viper.SetDefault(keys[1][0], "2")
-	viper.SetDefault(keys[2][0], "3")
-	viper.SetDefault(keys[3][0], "4")
-	viper.SetDefault(keys[4][0], "5")
-	viper.SetDefault(keys[5][0], "6")
-	viper.SetDefault(keys[6][0], "7")
-	viper.SetDefault(keys[7][0], "8")
-	viper.SetDefault(keys[8][0], "9")
-	viper.SetDefault(keys[9][0], "10")
-	viper.SetDefault(keys[10][0], "11")
-	viper.SetDefault(keys[11][0], "12")
+	v := viper.New()
 
-	viper.SetDefault(keys[0][1], "CTRL+U")
-	viper.SetDefault(keys[1][1], "CTRL+I")
-	viper.SetDefault(keys[2][1], "CTRL+O")
-	viper.SetDefault(keys[3][1], "CTRL+P")
-	viper.SetDefault(keys[4][1], "CTRL+J")
-	viper.SetDefault(keys[5][1], "CTRL+K")
-	viper.SetDefault(keys[6][1], "CTRL+L")
-	viper.SetDefault(keys[7][1], "CTRL+;")
-	viper.SetDefault(keys[8][1], "CTRL+N")
-	viper.SetDefault(keys[9][1], "CTRL+M")
-	viper.SetDefault(keys[10][1], "CTRL+,")
-	viper.SetDefault(keys[11][1], "CTRL+.")
-
-	viper.SetConfigFile(configFileName)
-	err := viper.ReadInConfig()
+	configFileName := configFileName
+	v.SetConfigFile(configFileName)
+	err := v.ReadInConfig()
 	if err != nil {
 		if strings.Contains(err.Error(), "The system cannot find the file specified") {
-			viper.WriteConfigAs(configFileName)
-			fmt.Println("Generated config file, please make any desired changes and re-launch. Program will exit in 10 seconds.")
-			time.Sleep(10 * time.Second)
-			os.Exit(0)
+			hasLegacy := readLegacy()
+			if !hasLegacy {
+				// Write the default config
+				setAndWriteConfig(defaultConfig)
+				fmt.Println("Generated config file, please make any desired changes and re-launch. Program will exit in 10 seconds.")
+				time.Sleep(10 * time.Second)
+				os.Exit(0)
+			}
 		} else {
 			panic("Failed to read in config: " + err.Error())
 		}
 	}
 
-	for i := range keys {
-		b := Button{
-			ID:        i,
-			Label:     viper.GetString(keys[i][0]),
-			keyString: viper.GetString(keys[i][1]),
-		}
-		b.parseKeyString()
+	c := ProjectConfig{}
+	err = v.UnmarshalKey("config", &c)
+	if err != nil {
+		panic(err)
 	}
+	return c
 }
 
-func Get(key string) string {
-	return viper.GetString(key)
+func setAndWriteConfig(c ProjectConfig) {
+	v := viper.New()
+	v.Set("config", c)
+	v.SafeWriteConfigAs(configFileName)
 }
 
 type Button struct {
@@ -94,10 +92,11 @@ type Button struct {
 	Label string
 	Key   int
 
-	HasCtrl    bool
-	HasShift   bool
-	HasAlt     bool
-	IsDisabled bool
+	HasCtrl      bool
+	HasShift     bool
+	HasAlt       bool
+	IsDisabled   bool
+	IsExceedsMax bool
 }
 
 func (b *Button) parseKeyString() {
@@ -222,7 +221,9 @@ func (b *Button) parseKeyString() {
 		panic("don't know how to process " + b.keyString + ". Set the whole string to \"DISABLED\" if you'd like to ignore it.")
 	}
 
-	Buttons = append(Buttons, *b)
+	if !b.IsExceedsMax {
+		Buttons = append(Buttons, *b)
+	}
 }
 
 func (b *Button) String() string {
