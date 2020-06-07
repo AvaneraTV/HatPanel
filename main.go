@@ -42,20 +42,20 @@ func main() {
 	w.ShowAndRun()
 }
 
-func genButtons(c config.ProjectConfig) []fyne.CanvasObject {
+func genButtons(c *config.ProjectConfig) []fyne.CanvasObject {
 	maxButtons := c.HotkeyPanel.NumCols * c.HotkeyPanel.NumRows
 	buttons := []fyne.CanvasObject{}
 	for i := 0; i < len(c.HotkeyPanel.Buttons) && i < maxButtons; i++ {
 		var b fyne.CanvasObject
-		b = newButton(c.HotkeyPanel.Buttons[i], i)
+		b = newButton(&c.HotkeyPanel.Buttons[i], i)
 		buttons = append(buttons, b)
 	}
 
 	return buttons
 }
 
-func newButton(button config.HotkeyPanelButton, buttonConfigIndex int) *widget.Button {
-	keyboardEvent := keybd_event.GenerateKeypressFunction(button)
+func newButton(button *config.HotkeyPanelButton, buttonConfigIndex int) *widget.Button {
+	keyboardEvent := keybd_event.GenerateKeypressFunction(*button)
 	f := func() {
 		keyboardEvent()
 

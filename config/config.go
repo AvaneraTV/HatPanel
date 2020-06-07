@@ -42,7 +42,7 @@ const (
 )
 
 // ReadConfig will read in the configuration from file. It will save the config if needed.
-func ReadConfig() ProjectConfig {
+func ReadConfig() *ProjectConfig {
 
 	v := viper.New()
 
@@ -69,7 +69,7 @@ func ReadConfig() ProjectConfig {
 	if err != nil {
 		panic(err)
 	}
-	return c
+	return &c
 }
 
 func setAndWriteConfig(c ProjectConfig) {
