@@ -9,7 +9,7 @@ var (
 			Buttons: []HotkeyPanelButton{
 				{
 					Key:   "U",
-					Label: "1",
+					Label: "Key1",
 
 					HasAlt:   false,
 					HasCtrl:  true,
@@ -19,7 +19,7 @@ var (
 				},
 				{
 					Key:   "I",
-					Label: "2",
+					Label: "Key2",
 
 					HasAlt:   false,
 					HasCtrl:  true,
@@ -29,7 +29,7 @@ var (
 				},
 				{
 					Key:   "O",
-					Label: "3",
+					Label: "Key3",
 
 					HasAlt:   false,
 					HasCtrl:  true,
@@ -39,7 +39,7 @@ var (
 				},
 				{
 					Key:   "P",
-					Label: "4",
+					Label: "Key4",
 
 					HasAlt:   false,
 					HasCtrl:  true,
@@ -49,7 +49,7 @@ var (
 				},
 				{
 					Key:   "J",
-					Label: "5",
+					Label: "Key5",
 
 					HasAlt:   false,
 					HasCtrl:  true,
@@ -59,7 +59,7 @@ var (
 				},
 				{
 					Key:   "K",
-					Label: "6",
+					Label: "Key6",
 
 					HasAlt:   false,
 					HasCtrl:  true,
@@ -69,7 +69,7 @@ var (
 				},
 				{
 					Key:   "L",
-					Label: "7",
+					Label: "Key7",
 
 					HasAlt:   false,
 					HasCtrl:  true,
@@ -79,7 +79,7 @@ var (
 				},
 				{
 					Key:   ";",
-					Label: "8",
+					Label: "Key8",
 
 					HasAlt:   false,
 					HasCtrl:  true,
@@ -89,7 +89,7 @@ var (
 				},
 				{
 					Key:   "N",
-					Label: "9",
+					Label: "Key9",
 
 					HasAlt:   false,
 					HasCtrl:  true,
@@ -99,7 +99,7 @@ var (
 				},
 				{
 					Key:   "M",
-					Label: "10",
+					Label: "Key10",
 
 					HasAlt:   false,
 					HasCtrl:  true,
@@ -109,7 +109,7 @@ var (
 				},
 				{
 					Key:   ",",
-					Label: "11",
+					Label: "Key11",
 
 					HasAlt:   false,
 					HasCtrl:  true,
@@ -119,7 +119,7 @@ var (
 				},
 				{
 					Key:   ".",
-					Label: "12",
+					Label: "Key12",
 
 					HasAlt:   false,
 					HasCtrl:  true,

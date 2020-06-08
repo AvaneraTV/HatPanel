@@ -8,6 +8,6 @@ import (
 func main() {
 	projectConfig := config.ReadConfig()
 
-	app := fyne.NewApp()
-	app.LaunchHotkeyPanel(projectConfig.HotkeyPanel)
+	app := fyne.NewApp(projectConfig)
+	app.Launch()
 }

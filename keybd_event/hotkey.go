@@ -40,16 +40,7 @@ func GenerateKeypressFunction(button config.HotkeyPanelButton) KeypressFunction 
 		if err != nil {
 			fmt.Println(err)
 		} else {
-			if button.HasAlt {
-				fmt.Print("ALT+")
-			}
-			if button.HasCtrl {
-				fmt.Print("CTRL+")
-			}
-			if button.HasAlt {
-				fmt.Print("ALT+")
-			}
-			fmt.Println(button.Key)
+			fmt.Println(button.String())
 		}
 	}
 }
@@ -162,5 +153,68 @@ func keybdEventFromKeyString(key string) int {
 		return keybd_event.VK_SPACE
 	default:
 		panic("Invalid key provided")
+	}
+}
+
+// GetAllValidKeyStrings will enumerate all valid strings for use in this package.
+func GetAllValidKeyStrings() []string {
+	return []string{
+		// Top row
+		"~",
+		"1",
+		"2",
+		"3",
+		"4",
+		"5",
+		"6",
+		"7",
+		"8",
+		"9",
+		"0",
+		"-",
+		"=",
+		"BACKSPACE",
+		// Second row
+		"TAB",
+		"Q",
+		"W",
+		"E",
+		"R",
+		"T",
+		"Y",
+		"U",
+		"I",
+		"O",
+		"P",
+		"[",
+		"]",
+		"ENTER",
+		// Third row
+		"CAPSLOCK",
+		"A",
+		"S",
+		"D",
+		"F",
+		"G",
+		"H",
+		"J",
+		"K",
+		"L",
+		";",
+		"'",
+		"\\",
+		// Bottom row
+		"Z",
+		"X",
+		"C",
+		"V",
+		"B",
+		"N",
+		"M",
+		",",
+		".",
+		"/",
+		// Bottom-er
+		"SPACE",
 	}
 }

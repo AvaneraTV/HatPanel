@@ -21,28 +21,33 @@ type hotkeyPanelButtonState struct {
 	LastPressed    int
 }
 
-func newHotkeyPanel(window *fyne.Window, config config.HotkeyPanelConfig) hotkeyPanel {
+func newHotkeyPanel(window *fyne.Window, config *config.HotkeyPanelConfig) hotkeyPanel {
 	panel := hotkeyPanel{
 		window:  window,
 		buttons: map[int]*widget.Button{},
 	}
 
 	container := fyne.NewContainerWithLayout(layout.NewGridLayout(1),
-		// Row 1
 		fyne.NewContainerWithLayout(layout.NewGridLayout(config.NumCols),
 			panel.generateHotkeyButtons(config)...,
 		),
 	)
-
 	panel.container = container
-
 	(*window).SetContent(container)
-	(*window).ShowAndRun()
-
 	return panel
 }
 
-func (hp *hotkeyPanel) generateHotkeyButtons(c config.HotkeyPanelConfig) []fyne.CanvasObject {
+func (hp *hotkeyPanel) launch() {
+	(*hp.container).Refresh()
+	(*hp.window).ShowAndRun()
+}
+
+func (hp *hotkeyPanel) show() {
+	(*hp.container).Refresh()
+	(*hp.window).Show()
+}
+
+func (hp *hotkeyPanel) generateHotkeyButtons(c *config.HotkeyPanelConfig) []fyne.CanvasObject {
 	maxButtons := c.NumCols * c.NumRows
 	buttons := []fyne.CanvasObject{}
 	for i := 0; i < len(c.Buttons) && i < maxButtons; i++ {

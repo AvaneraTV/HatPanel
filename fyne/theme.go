@@ -8,11 +8,16 @@ import (
 
 // NewAppTheme is
 func newAppTheme(fallbackTheme fyne.Theme) fyne.Theme {
-	return &appTheme{defaultTheme: fallbackTheme}
+	return &appTheme{
+		defaultTheme: fallbackTheme,
+	}
 }
 
 type appTheme struct {
 	defaultTheme fyne.Theme
+
+	textSize *int
+	padding  *int
 }
 
 func (t *appTheme) BackgroundColor() color.Color {
@@ -58,8 +63,10 @@ func (t *appTheme) ShadowColor() color.Color {
 	return t.defaultTheme.ShadowColor()
 }
 func (t *appTheme) TextSize() int {
+	if t.textSize != nil {
+		return *t.textSize
+	}
 	return 32
-	// t.defaultTheme.TextSize()
 }
 func (t *appTheme) TextFont() fyne.Resource {
 	return t.defaultTheme.TextFont()
@@ -77,8 +84,10 @@ func (t *appTheme) TextMonospaceFont() fyne.Resource {
 	return t.defaultTheme.TextMonospaceFont()
 }
 func (t *appTheme) Padding() int {
+	if t.padding != nil {
+		return *t.padding
+	}
 	return 32
-	// return t.defaultTheme.Padding()
 }
 func (t *appTheme) IconInlineSize() int {
 	return t.defaultTheme.IconInlineSize()

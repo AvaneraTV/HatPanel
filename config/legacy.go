@@ -82,7 +82,7 @@ func readLegacy() (hadLegacy bool) {
 		newConfig.HotkeyPanel.Buttons = append(newConfig.HotkeyPanel.Buttons, b)
 	}
 
-	setAndWriteConfig(newConfig)
+	newConfig.SaveToFile()
 	ReadConfig()
 	return true
 }

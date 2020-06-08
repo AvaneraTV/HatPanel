@@ -2,6 +2,8 @@ package fyne
 
 import (
 	"HatPanel/config"
+	"HatPanel/util"
+	"fmt"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
@@ -10,28 +12,76 @@ import (
 type App struct {
 	fyneApp fyne.App
 
+	config *config.ProjectConfig
+
 	hotkeyPanel *hotkeyPanel
+	configPanel *configPanel
+
+	hotkeyTheme appTheme
+	configTheme appTheme
 }
 
 // NewApp will set up and launch a new app. This app is the core of the HatPanel.
-func NewApp() App {
-	fyneApp := app.New()
-	fyneApp.Settings().SetTheme(newAppTheme(fyneApp.Settings().Theme()))
+func NewApp(config *config.ProjectConfig) App {
 
-	return App{
-		fyneApp: fyneApp,
+	a := App{
+		fyneApp: app.New(),
+		config:  config,
 	}
+	a.configTheme = appTheme{
+		defaultTheme: a.fyneApp.Settings().Theme(),
+		textSize:     util.IntPtr(18),
+		padding:      util.IntPtr(12),
+	}
+	a.hotkeyTheme = appTheme{
+		defaultTheme: a.fyneApp.Settings().Theme(),
+		textSize:     util.IntPtr(32),
+		padding:      util.IntPtr(32),
+	}
+
+	a.initializeConfigPanel()
+
+	return a
 }
 
-// LaunchHotkeyPanel will launch the virtual keyboard panel with the most recently updated configuration.
-func (a *App) LaunchHotkeyPanel(config config.HotkeyPanelConfig) {
-	newWindow := a.fyneApp.NewWindow("HatPanel - Hotkeys")
-	newWindow.SetOnClosed(a.OpenConfigPanel)
-	hotkeyPanel := newHotkeyPanel(&newWindow, config)
+func (a *App) initializeConfigPanel() {
+	a.fyneApp.Settings().SetTheme(&a.configTheme)
+	showHotkeyPanel := func() {
+		a.initializeHotkeyPanel()
+		a.showHotkeyPanel()
+	}
+
+	configWindow := a.fyneApp.NewWindow("HatPanel - Config")
+	configWindow.SetMaster()
+	configPanel := newConfigPanel(&configWindow, showHotkeyPanel, a.config)
+	a.configPanel = &configPanel
+
+}
+
+func (a *App) initializeHotkeyPanel() {
+	a.fyneApp.Settings().SetTheme(&a.hotkeyTheme)
+
+	hotkeyWindow := a.fyneApp.NewWindow("HatPanel - Hotkeys")
+	hotkeyWindow.SetOnClosed(func() {
+		a.initializeConfigPanel()
+		a.configPanel.show()
+	})
+	hotkeyPanel := newHotkeyPanel(&hotkeyWindow, &a.config.HotkeyPanel)
 	a.hotkeyPanel = &hotkeyPanel
 }
 
-// OpenConfigPanel will open the config panel. This is not finished, and this stub is a placeholder used for the hotkey panel refactor.
-func (a *App) OpenConfigPanel() {
-	a.fyneApp.Quit()
+func (a *App) Launch() {
+	a.configPanel.launch()
+}
+
+// LaunchHotkeyPanel will launch the virtual keyboard panel with the most recently updated configuration.
+func (a *App) showHotkeyPanel() {
+	fmt.Println("Launching hotkey panel")
+	a.hotkeyPanel.show()
+}
+
+// LaunchConfigPanel will open the config panel.
+func (a *App) showConfigPanel() {
+	fmt.Println("Launching config panel")
+	a.configPanel.show()
 }
