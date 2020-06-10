@@ -1,2 +1,6 @@
 hatPanel_config.yml
+hatPanel_config.json
 HatPanel.exe
+
+.vscode
+__debug_bin
